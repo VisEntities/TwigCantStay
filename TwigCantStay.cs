@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright (C) 2024 Game4Freak.io
- * Your use of this mod indicates acceptance of the Game4Freak EULA.
+ * This mod is provided under the Game4Freak EULA.
  * Full legal terms can be found at https://game4freak.io/eula/
  */
 
@@ -15,7 +15,7 @@ using static BuildingManager;
 namespace Oxide.Plugins
 {
     [Info("Twig Cant Stay", "VisEntities", "1.0.0")]
-    [Description(" ")]
+    [Description("Limits the number of twig blocks a building can have.")]
     public class TwigCantStay : RustPlugin
     {
         #region Fields
@@ -241,7 +241,7 @@ namespace Oxide.Plugins
 
             bool isOwnerOrTeammate = targetBuildingBlock.OwnerID == player.userID || AreTeammates(targetBuildingBlock.OwnerID, player.userID);
             bool isAuthorized = false;
-            Building building = TryGetBuildingForEntity(targetBuildingBlock, 1, true);
+            Building building = TryGetBuildingForEntity(targetBuildingBlock, minimumBuildingBlocks: 1, mustHaveBuildingPrivilege: true);
             if (building != null)
             {
                 isAuthorized = building.buildingPrivileges.Any(priv => priv.IsAuthed(player));
@@ -330,7 +330,7 @@ namespace Oxide.Plugins
         {
             lang.RegisterMessages(new Dictionary<string, string>
             {
-                [Lang.CannotBuildTwig] = "You cannot build more twig blocks in this building. The limit of {0} has been reached. Upgrade or remove existing twig blocks to build new ones."
+                [Lang.CannotBuildTwig] = "You cannot build more twig blocks in this building. The limit of {0} has been reached. Upgrade or remove existing twig blocks to build more."
             }, this, "en");
         }
 
