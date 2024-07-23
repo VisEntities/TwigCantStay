@@ -14,7 +14,7 @@ using static BuildingManager;
 
 namespace Oxide.Plugins
 {
-    [Info("Twig Cant Stay", "VisEntities", "1.0.0")]
+    [Info("Twig Cant Stay", "VisEntities", "1.1.0")]
     [Description("Limits the number of twig blocks a building can have.")]
     public class TwigCantStay : RustPlugin
     {
@@ -168,6 +168,7 @@ namespace Oxide.Plugins
         private void Init()
         {
             _plugin = this;
+            PermissionUtil.RegisterPermissions();
             _storedData = DataFileUtil.LoadOrCreate<StoredData>(DataFileUtil.GetFilePath());
         }
 
@@ -227,7 +228,7 @@ namespace Oxide.Plugins
                 return null;
 
             BasePlayer player = planner.GetOwnerPlayer();
-            if (player == null)
+            if (player == null || PermissionUtil.HasPermission(player, PermissionUtil.IGNORE))
                 return null;
 
             if (!prefab.fullName.Contains("building core"))
@@ -318,6 +319,32 @@ namespace Oxide.Plugins
         }
 
         #endregion Helper Functions
+
+        #region Permissions
+
+        private static class PermissionUtil
+        {
+            public const string IGNORE = "twigcantstay.ignore";
+            private static readonly List<string> _permissions = new List<string>
+            {
+                IGNORE,
+            };
+
+            public static void RegisterPermissions()
+            {
+                foreach (var permission in _permissions)
+                {
+                    _plugin.permission.RegisterPermission(permission, _plugin);
+                }
+            }
+
+            public static bool HasPermission(BasePlayer player, string permissionName)
+            {
+                return _plugin.permission.UserHasPermission(player.UserIDString, permissionName);
+            }
+        }
+
+        #endregion Permissions
 
         #region Localization
 
