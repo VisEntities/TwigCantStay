@@ -10,11 +10,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using static BuildingManager;
 
 namespace Oxide.Plugins
 {
-    [Info("Twig Cant Stay", "VisEntities", "1.1.0")]
+    [Info("Twig Cant Stay", "VisEntities", "1.1.1")]
     [Description("Limits the number of twig blocks a building can have.")]
     public class TwigCantStay : RustPlugin
     {
@@ -242,7 +241,7 @@ namespace Oxide.Plugins
 
             bool isOwnerOrTeammate = targetBuildingBlock.OwnerID == player.userID || AreTeammates(targetBuildingBlock.OwnerID, player.userID);
             bool isAuthorized = false;
-            Building building = TryGetBuildingForEntity(targetBuildingBlock, minimumBuildingBlocks: 1, mustHaveBuildingPrivilege: true);
+            BuildingManager.Building building = TryGetBuildingForEntity(targetBuildingBlock, minimumBuildingBlocks: 1, mustHaveBuildingPrivilege: true);
             if (building != null)
             {
                 isAuthorized = building.buildingPrivileges.Any(priv => priv.IsAuthed(player));
@@ -283,7 +282,7 @@ namespace Oxide.Plugins
 
         #region Helper Functions
 
-        public static Building TryGetBuildingForEntity(BaseEntity entity, int minimumBuildingBlocks, bool mustHaveBuildingPrivilege = true)
+        public static BuildingManager.Building TryGetBuildingForEntity(BaseEntity entity, int minimumBuildingBlocks, bool mustHaveBuildingPrivilege = true)
         {
             BuildingBlock buildingBlock = entity as BuildingBlock;
             DecayEntity decayEntity = entity as DecayEntity;
@@ -298,7 +297,7 @@ namespace Oxide.Plugins
                 buildingId = decayEntity.buildingID;
             }
 
-            Building building = server.GetBuilding(buildingId);
+            BuildingManager.Building building = BuildingManager.server.GetBuilding(buildingId);
             if (building != null &&
                 building.buildingBlocks.Count >= minimumBuildingBlocks &&
                 (!mustHaveBuildingPrivilege || building.HasBuildingPrivileges()))
